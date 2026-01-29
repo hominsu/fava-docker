@@ -18,6 +18,6 @@ target "fava" {
   context    = "."
   dockerfile = "fava/Dockerfile"
   args = {
-    "FAVA_VERSION" = "${target.metadata.args.DOCKER_META_VERSION}"
+    FAVA_VERSION = "${target.metadata.args.DOCKER_META_VERSION}"
   }
 }

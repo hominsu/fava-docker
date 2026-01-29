@@ -1,5 +1,7 @@
 FROM python:slim AS builder
 
+ARG FAVA_VERSION
+
 RUN pip install --root-user-action ignore --prefix="/install" fava==${FAVA_VERSION}
 
 FROM gcr.io/distroless/python3-debian12
