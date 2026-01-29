@@ -1,4 +1,4 @@
-FROM python:slim AS builder
+FROM python:bookworm AS builder
 
 ARG FAVA_VERSION
 
