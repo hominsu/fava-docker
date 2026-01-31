@@ -1,38 +1,26 @@
 FROM debian:bookworm AS builder
-
-ARG FAVA_VERSION
+ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
 
 ENV BUILD_DEPS="\
     build-essential \
-    libxml2-dev     \
-    libxslt-dev     \
     python3         \
     libpython3-dev  \
-    python3-pip     \
-    python3-venv    \
     "
-
 RUN apt-get -yqq update &&  \
     apt-get install -yq --no-install-recommends ${BUILD_DEPS} &&  \
     apt-get autoremove -y &&  \
     apt-get clean -y && \
     rm -rf /var/lib/apt/lists/
 
-ENV PATH="/app/bin:$PATH"
-RUN python3 -mvenv /app
+ARG VIRTUAL_ENV=/app
+WORKDIR ${VIRTUAL_ENV}
 
-ENV REQUIREMENTS="\
-    beancount-periodic      \
-    fava==${FAVA_VERSION}   \
-    fava-dashboards         \
-    fava-investor           \
-    fava-plugins            \
-    fava-portfolio-returns  \
-    "
-
-RUN pip3 install --no-cache-dir ${REQUIREMENTS} && \
-    pip3 uninstall -y pip &&  \
-    find /app -name __pycache__ -exec rm -rf -v {} +
+COPY requirements.txt .
+RUN --mount=from=ghcr.io/astral-sh/uv:latest,source=/uv,target=/bin/uv \
+    uv venv ${VIRTUAL_ENV} &&   \
+    uv pip install --no-cache -r requirements.txt &&   \
+    find ${VIRTUAL_ENV} -name __pycache__ -exec rm -rf -v {} + &&   \
+    rm requirements.txt
 
 FROM gcr.io/distroless/python3-debian12
 COPY --from=builder /app /app
