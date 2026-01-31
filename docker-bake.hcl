@@ -15,8 +15,8 @@ target "cross" {
 
 target "fava" {
   inherits = ["metadata", "cross"]
-  context    = "."
-  dockerfile = "fava/Dockerfile"
+  context    = "fava"
+  dockerfile = "Dockerfile"
   args = {
     FAVA_VERSION = "${target.metadata.args.DOCKER_META_VERSION}"
   }
