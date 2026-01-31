@@ -6,6 +6,7 @@ ENV BUILD_DEPS="\
     python3         \
     libpython3-dev  \
     "
+
 RUN apt-get -yqq update &&  \
     apt-get install -yq --no-install-recommends ${BUILD_DEPS} &&  \
     apt-get autoremove -y &&  \
@@ -13,7 +14,6 @@ RUN apt-get -yqq update &&  \
     rm -rf /var/lib/apt/lists/
 
 ARG VIRTUAL_ENV=/app
-WORKDIR ${VIRTUAL_ENV}
 
 COPY requirements.txt .
 RUN --mount=from=ghcr.io/astral-sh/uv:latest,source=/uv,target=/bin/uv \
