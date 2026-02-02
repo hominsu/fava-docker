@@ -15,6 +15,6 @@ target "cross" {
 
 target "fava" {
   inherits = ["metadata", "cross"]
-  context    = "fava"
+  context    = "."
   dockerfile = "Dockerfile"
 }
