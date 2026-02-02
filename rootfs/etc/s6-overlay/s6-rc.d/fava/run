@@ -1,0 +1,9 @@
+#!/command/execlineb -P
+
+multisubstitute
+{
+  import -u BEANCOUNT_FILE
+}
+
+s6-setuidgid beancount
+fava ${BEANCOUNT_FILE}

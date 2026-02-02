@@ -25,10 +25,10 @@ RUN --mount=from=ghcr.io/astral-sh/uv:latest,source=/uv,target=/bin/uv \
 FROM gcr.io/distroless/python3-debian12
 COPY --from=builder /app /app
 
-ENV BEANCOUNT_FILE=""
-ENV FAVA_HOST="0.0.0.0"
 ENV PATH="/app/bin:$PATH"
 
-EXPOSE 5000
+ENV BEANCOUNT_FILE=""
+ENV FAVA_PORT="5000"
+ENV FAVA_HOST="localhost"
 
 ENTRYPOINT ["fava"]
