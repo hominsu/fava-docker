@@ -1,9 +1,8 @@
-#!/command/execlineb -P
+#!/usr/bin/execlineb -P
 
-multisubstitute
-{
-  import -u BEANCOUNT_FILE
-}
+with-contenv
 
-s6-setuidgid beancount
-fava ${BEANCOUNT_FILE}
+s6-setuidgid fava
+elglob -s -0 beanfiles /data/*.bean
+elglob -s -0 beancountfiles /data/*.beancount
+fava ${beanfiles} ${beancountfiles}
