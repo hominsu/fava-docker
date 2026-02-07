@@ -1,0 +1,47 @@
+services:
+  fava:
+    image: hominsu/fava:latest
+    container_name: fava
+    restart: always
+    depends_on:
+      s3fs:
+        condition: service_healthy
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - "../data:/data:rslave"
+    ports:
+      - "5000:5000"
+    networks:
+      net:
+        aliases:
+          - fava
+
+  s3fs:
+    image: efrecon/s3fs:1.95
+    container_name: s3fs
+    restart: always
+    env_file:
+      - path: .env
+    environment:
+      - S3FS_ARGS=use_path_request_style,allow_other
+      - UID=1001
+      - GID=1001
+    cap_add:
+      - SYS_ADMIN
+    devices:
+      - /dev/fuse
+    security_opt:
+      - apparmor:unconfined
+    volumes:
+      - "../data:/opt/s3fs/bucket:rshared"
+    healthcheck:
+      test: ["CMD", "mountpoint", "-q", "/opt/s3fs/bucket"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+networks:
+  net:
+    driver: bridge

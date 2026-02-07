@@ -1,0 +1,12 @@
+.DS_Store
+.git
+.github
+.dockerignore
+.gitignore
+.editorconfig
+
+docker-bake.hcl
+Dockerfile
+
+data
+deploy
