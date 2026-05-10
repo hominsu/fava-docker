@@ -1,7 +1,7 @@
 FROM python:alpine AS base
 
 RUN addgroup --system --gid 1001 fava &&    \
-    adduser --system --uid 1001 fava &&     \
+    adduser --system --uid 1001 --ingroup fava fava &&  \
     hash -r
 
 FROM base AS builder
