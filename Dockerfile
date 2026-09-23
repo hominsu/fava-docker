@@ -8,8 +8,6 @@ FROM base AS builder
 
 ARG VIRTUAL_ENV=/app
 
-COPY requirements.txt .
-
 ENV BUILD_DEPS="\
     bison       \
     flex        \
@@ -18,24 +16,28 @@ ENV BUILD_DEPS="\
     uv          \
     "
 
+RUN apk add --no-cache ${BUILD_DEPS} &&    \
+    rm -rf /var/cache/apk/*
+
 ENV UV_COMPILE_BYTECODE=1   \
     UV_LINK_MODE=copy
 
-RUN apk add --no-cache ${BUILD_DEPS} &&  \
-    rm -rf /var/cache/apk/* &&  \
+COPY --link requirements.txt /tmp/requirements.txt
+
+RUN --mount=type=cache,target=/root/.cache/uv \
     uv venv ${VIRTUAL_ENV} &&   \
-    uv pip install --no-cache -r requirements.txt &&   \
-    find ${VIRTUAL_ENV} -name __pycache__ -exec rm -rf -v {} + &&   \
-    hash -r
+    uv pip install --python "${VIRTUAL_ENV}/bin/python" -r /tmp/requirements.txt
 
 FROM base AS runner
 
-RUN apk add --no-cache s6-overlay &&  \
-    rm -rf /var/cache/apk/* &&  \
-    hash -r
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
-COPY --from=builder --chown=fava:fava /app /app
-COPY rootfs/ /
+RUN apk add --no-cache s6-overlay &&  \
+    rm -rf /var/cache/apk/*
+
+COPY --from=builder --link --chown=fava:fava /app /app
+COPY --link rootfs/ /
 
 ENV PATH="/app/bin:$PATH"   \
     FAVA_HOST="0.0.0.0"     \
